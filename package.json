@@ -1,0 +1,118 @@
+{
+  "name": "context-bridge",
+  "displayName": "Context Bridge",
+  "publisher": "your-publisher",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/local/context-bridge"
+  },
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "test:unit": "npm run compile && mocha out/test/ringBuffer.test.js out/test/phaseDetection.test.js --ui tdd --color",
+    "test:integration": "npm run compile && node out/test/runTest.js",
+    "test": "npm run test:unit && npm run test:integration"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.2.3",
+    "@types/vscode": "^1.93.0",
+    "@vscode/test-electron": "^2.5.2",
+    "mocha": "^11.7.5",
+    "typescript": "^5.9.3"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "ctxbridge.sendCodeRef",
+        "title": "Context Bridge: Send Code Reference"
+      },
+      {
+        "command": "ctxbridge.sendToClaudeCode",
+        "title": "Context Bridge: Send to Claude Code"
+      },
+      {
+        "command": "ctxbridge.assembleContext",
+        "title": "Context Bridge: Assemble Developer Context"
+      },
+      {
+        "command": "ctxbridge.showContextJson",
+        "title": "Context Bridge: Show Context JSON"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "ctxbridge.sendCodeRef",
+          "when": "editorHasSelection || editorTextFocus",
+          "group": "navigation"
+        },
+        {
+          "command": "ctxbridge.sendToClaudeCode",
+          "when": "editorHasSelection || editorTextFocus",
+          "group": "navigation"
+        },
+        {
+          "command": "ctxbridge.assembleContext",
+          "when": "editorTextFocus",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "ctxbridge.sendToClaudeCode",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "ctxbridge.assembleContext",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Context Bridge",
+      "properties": {
+        "ctxbridge.endpoint": {
+          "type": "string",
+          "description": "Optional HTTPS endpoint to POST context payloads to (e.g. https://host/api/context)",
+          "default": ""
+        },
+        "ctxbridge.eventBufferSize": {
+          "type": "number",
+          "description": "Maximum number of events in the rolling activity log",
+          "default": 200,
+          "minimum": 50,
+          "maximum": 1000
+        },
+        "ctxbridge.eventWindowSeconds": {
+          "type": "number",
+          "description": "How many seconds of event history to include in context bundles",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 300
+        },
+        "ctxbridge.maxDiagnosticsInContext": {
+          "type": "number",
+          "description": "Maximum number of diagnostic entries to include in context",
+          "default": 50,
+          "minimum": 10,
+          "maximum": 200
+        }
+      }
+    }
+  }
+}
