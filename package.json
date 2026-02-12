@@ -1,71 +1,116 @@
 {
-  "name": "mcp-code-ref",
-  "displayName": "MCP Code Reference",
+  "name": "context-bridge",
+  "displayName": "Context Bridge",
   "publisher": "your-publisher",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/local/mcp-code-ref"
+    "url": "https://github.com/mediamanipulation/context-bridge"
   },
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.93.0"
   },
   "activationEvents": [
-    "onCommand:mcp.sendCodeRef",
-    "onCommand:mcp.sendToClaudeCode"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -w -p ./"
+    "watch": "tsc -w -p ./",
+    "test:unit": "npm run compile && mocha out/test/ringBuffer.test.js out/test/phaseDetection.test.js --ui tdd --color",
+    "test:integration": "npm run compile && node out/test/runTest.js",
+    "test": "npm run test:unit && npm run test:integration"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.10",
     "@types/node": "^25.2.3",
-    "@types/vscode": "^1.60.0",
+    "@types/vscode": "^1.93.0",
+    "@vscode/test-electron": "^2.5.2",
+    "mocha": "^11.7.5",
     "typescript": "^5.9.3"
   },
   "contributes": {
     "commands": [
       {
-        "command": "mcp.sendCodeRef",
-        "title": "MCP: Send Code Reference"
+        "command": "ctxbridge.sendCodeRef",
+        "title": "Context Bridge: Send Code Reference"
       },
       {
-        "command": "mcp.sendToClaudeCode",
-        "title": "Send to Claude Code"
+        "command": "ctxbridge.sendToClaudeCode",
+        "title": "Context Bridge: Send to Claude Code"
+      },
+      {
+        "command": "ctxbridge.assembleContext",
+        "title": "Context Bridge: Assemble Developer Context"
+      },
+      {
+        "command": "ctxbridge.showContextJson",
+        "title": "Context Bridge: Show Context JSON"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "mcp.sendCodeRef",
+          "command": "ctxbridge.sendCodeRef",
           "when": "editorHasSelection || editorTextFocus",
           "group": "navigation"
         },
         {
-          "command": "mcp.sendToClaudeCode",
+          "command": "ctxbridge.sendToClaudeCode",
           "when": "editorHasSelection || editorTextFocus",
+          "group": "navigation"
+        },
+        {
+          "command": "ctxbridge.assembleContext",
+          "when": "editorTextFocus",
           "group": "navigation"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "mcp.sendToClaudeCode",
+        "command": "ctxbridge.sendToClaudeCode",
         "key": "ctrl+shift+c",
         "mac": "cmd+shift+c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "ctxbridge.assembleContext",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a",
         "when": "editorTextFocus"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "MCP",
+      "title": "Context Bridge",
       "properties": {
-        "mcp.endpoint": {
+        "ctxbridge.endpoint": {
           "type": "string",
-          "description": "Optional MCP HTTP endpoint to POST code.reference payloads to (e.g. https://host/api/mcp)",
+          "description": "Optional HTTPS endpoint to POST context payloads to (e.g. https://host/api/context)",
           "default": ""
+        },
+        "ctxbridge.eventBufferSize": {
+          "type": "number",
+          "description": "Maximum number of events in the rolling activity log",
+          "default": 200,
+          "minimum": 50,
+          "maximum": 1000
+        },
+        "ctxbridge.eventWindowSeconds": {
+          "type": "number",
+          "description": "How many seconds of event history to include in context bundles",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 300
+        },
+        "ctxbridge.maxDiagnosticsInContext": {
+          "type": "number",
+          "description": "Maximum number of diagnostic entries to include in context",
+          "default": 50,
+          "minimum": 10,
+          "maximum": 200
         }
       }
     }
