@@ -1,5 +1,7 @@
 # Context Bridge
 
+![Context Bridge](context-bridge-hero.png)
+
 **A VS Code extension that captures developer context and formats it for LLM consumption.**
 
 What started as a line-number capture tool has become a lightweight developer-intent bridge between your editor and AI assistants.
