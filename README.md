@@ -12,7 +12,7 @@ What started as a line-number capture tool has become a lightweight developer-in
 
 ## How It Works
 
-Three layers, two capture strategies, one output.
+Three layers, two capture strategies, two output formats.
 
 ```text
                 ┌─────────────────────────────┐
@@ -305,6 +305,12 @@ src/
   phaseDetection.ts     Pure function, score-based pattern matching
   contextAssembly.ts    Orchestrator + LLM markdown formatter
   httpClient.ts         HTTPS POST helper
+  test/
+    ringBuffer.test.ts    Unit tests for RingBuffer
+    phaseDetection.test.ts Unit tests for phase detection
+    formatBundle.test.ts  Unit tests for context formatting
+    runTest.ts            Integration test runner
+    suite/                Integration test suite
 ```
 
 Modules without VS Code dependencies (`types.ts`, `ringBuffer.ts`, `phaseDetection.ts`) are testable in complete isolation.
@@ -356,17 +362,24 @@ Then either:
 ## File Structure
 
 ```text
-src/extension.ts        Entry point, command registration (~135 lines)
-src/types.ts            Shared type definitions (~170 lines)
-src/ringBuffer.ts       Generic circular buffer (~45 lines)
-src/eventLog.ts         Event-driven capture layer (~155 lines)
-src/polledState.ts      Polled state capture (~125 lines)
-src/phaseDetection.ts   Workflow phase detection (~125 lines)
-src/contextAssembly.ts  Context assembly + LLM formatter (~150 lines)
-src/httpClient.ts       HTTPS POST helper (~35 lines)
-out/                    Compiled JavaScript output
-package.json            Extension manifest
-tsconfig.json           TypeScript config (ES2018, strict)
-CLAUDE.md               Claude Code development guidance
-README.md               This file
+src/
+  extension.ts            Entry point, command registration (~135 lines)
+  types.ts                Shared type definitions (~180 lines)
+  ringBuffer.ts           Generic circular buffer (~42 lines)
+  eventLog.ts             Event-driven capture layer (~170 lines)
+  polledState.ts          Polled state capture (~140 lines)
+  phaseDetection.ts       Workflow phase detection (~135 lines)
+  contextAssembly.ts      Context assembly + LLM formatter (~155 lines)
+  httpClient.ts           HTTPS POST helper (~35 lines)
+  test/
+    ringBuffer.test.ts    Unit tests — RingBuffer (11 tests)
+    phaseDetection.test.ts Unit tests — phase detection (14 tests)
+    formatBundle.test.ts  Unit tests — context formatting
+    runTest.ts            Integration test runner
+    suite/                Integration test suite
+out/                      Compiled JavaScript output
+package.json              Extension manifest
+tsconfig.json             TypeScript config (ES2018, strict)
+CLAUDE.md                 Claude Code development guidance
+README.md                 This file
 ```
